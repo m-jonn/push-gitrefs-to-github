@@ -10,6 +10,9 @@ env:
 jobs:
   docker-build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v4
     
@@ -17,7 +20,6 @@ jobs:
       with:
         prefix: SLUG_
         slug-maxlength: 'nolimit'
-    - run: echo "DOCKER_IMAGE_FQDN=$(echo ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SLUG_GITHUB_REF_NAME }})" >> $GITHUB_ENV
 
     - name: docker login
       uses: docker/login-action@v3
@@ -31,5 +33,5 @@ jobs:
       with:
         context: .
         file: ./Dockerfile
-        tags: ${{ env.DOCKER_IMAGE_FQDN }}
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SLUG_GITHUB_REF_NAME }}
         push: true
