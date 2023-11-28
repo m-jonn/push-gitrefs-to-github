@@ -2,6 +2,8 @@
 
 set -e
 
+pushd "${1:-$(pwd)}" > /dev/null 2>&1
+
 git_toplevel_dir=$(git rev-parse --show-toplevel)
 if [[ -z "$git_toplevel_dir" ]] 
 then
@@ -31,6 +33,12 @@ check_env_exists 'GITHUB_MIRROR_TOKEN'
 check_env_exists 'SRC_REMOTE_ADDRESS'
 check_env_exists 'SRC_WRITE_USERNAME'
 check_env_exists 'SRC_WRITE_ACCESS_TOKEN'
+
+
+#########################
+# Ignore CVE-2022-24765 #
+#########################
+git config --add safe.directory "$(pwd)"
 
 ###############
 # ADD REMOTES #
@@ -100,3 +108,5 @@ echo "git fetch --tags ${REMOTE_SRC_NAME}"
 git fetch --tags "${REMOTE_SRC_NAME}"
 echo "git push --tags ${REMOTE_GITHUB_NAME}"
 git push --tags "${REMOTE_GITHUB_NAME}"
+
+popd > /dev/null 2>&1
